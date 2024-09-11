@@ -10,6 +10,7 @@ hyperparameters:
   dataset_name: tiny_shakespeare
   beta: 0.1
   max_length: 128
+  num_workers: 2
   training_args:
     output_dir: "/tmp/llm_finetuning"
     max_steps: 5000
@@ -22,7 +23,6 @@ hyperparameters:
     logging_steps: 100
     save_strategy: "steps"
     save_steps: 1000
-    num_workers: 2
     learning_rate: 2e-5
 
 
