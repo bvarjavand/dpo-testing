@@ -3,17 +3,28 @@ project: DPO
 workspace: Bijan
 
 environment:
-    image: determinedai/environments:cuda-11.8-pytorch-2.0-gpu-0.27.1
+    image: bvarjavandhpe/dpo:0.1
 
 hyperparameters:
   model_name: Qwen/Qwen2-0.5B
   dataset_name: tiny_shakespeare
-  batch_size: 8
-  num_epochs: 3
-  learning_rate: 2e-5
   beta: 0.1
   max_length: 128
-  num_workers: 2
+  training_args:
+    output_dir: "/tmp/llm_finetuning"
+    max_steps: 5000
+    per_device_train_batch_size: 8
+    per_device_eval_batch_size: 8
+    fp16: true
+    evaluation_strategy: "steps"
+    eval_steps: 1000
+    logging_strategy: "steps"
+    logging_steps: 100
+    save_strategy: "steps"
+    save_steps: 1000
+    num_workers: 2
+    learning_rate: 2e-5
+
 
 resources:
   resource_pool: A100

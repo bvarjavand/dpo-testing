@@ -63,9 +63,7 @@ class DPOTrial(PyTorchTrial):
             model=self.model,
             reward_model=self.reward_model,
             beta=self.hparams["beta"],
-            args=TrainingArguments(output_dir="./output", 
-                                   per_device_train_batch_size=self.hparams["batch_size"],
-                                   per_device_eval_batch_size=self.hparams["batch_size"])
+            args=TrainingArguments(**self.hparams["training_args"])
         )
 
         # Wrap the model
@@ -73,7 +71,7 @@ class DPOTrial(PyTorchTrial):
 
         # Wrap the optimizer
         self.optimizer: torch.optim.Optimizer = self.context.wrap_optimizer(
-            torch.optim.AdamW(self.model.parameters(), lr=self.hparams["learning_rate"])
+            torch.optim.AdamW(self.model.parameters(), lr=self.hparams["training_args"]["learning_rate"])
         )
 
     def train_batch(
