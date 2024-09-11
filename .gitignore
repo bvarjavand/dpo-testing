@@ -1,0 +1,35 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Determined AI files
+determined-common/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Model checkpoints
+*.pt
+*.pth
+
+# Dataset files (if you don't want to track them)
+*.csv
+*.json
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
