@@ -1,6 +1,6 @@
 import determined as det
 from determined.pytorch import PyTorchTrial, PyTorchTrialContext, DataLoader
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from models import RewardModel
 from data import load_and_preprocess_dataset
 from trainer import DPOTrainer
@@ -34,32 +34,38 @@ class DPOTrial(PyTorchTrial):
         Args:
             context (PyTorchTrialContext): The context provided by Determined AI.
         """
-        self.context: PyTorchTrialContext = context
-        self.hparams: Dict[str, Any] = context.get_hparams()
+        super(DPOTrial, self).__init__(context)
+        self.context = context
+        self.hparams = context.get_hparams()
 
         # Load model and tokenizer
-        self.model: AutoModelForCausalLM = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.hparams["model_name"]
         )
-        self.tokenizer: AutoTokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(
             self.hparams["model_name"]
         )
 
         # Define reward model
-        self.reward_model: RewardModel = RewardModel(
+        self.reward_model = RewardModel(
             hidden_size=self.model.config.hidden_size
         )
 
         # Load and preprocess dataset
-        self.dataset: Dataset = load_and_preprocess_dataset(
+        self.dataset = load_and_preprocess_dataset(
             self.hparams["dataset_name"],
             self.tokenizer,
             max_length=self.hparams["max_length"],
         )
 
         # Create DPO trainer
-        self.dpo_trainer: DPOTrainer = DPOTrainer(
-            reward_model=self.reward_model, beta=self.hparams["beta"]
+        self.dpo_trainer = DPOTrainer(
+            model=self.model,
+            reward_model=self.reward_model,
+            beta=self.hparams["beta"],
+            args=TrainingArguments(output_dir="./output", 
+                                   per_device_train_batch_size=self.hparams["batch_size"],
+                                   per_device_eval_batch_size=self.hparams["batch_size"])
         )
 
         # Wrap the model
