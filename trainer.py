@@ -36,6 +36,7 @@ class DPOTrainer(Trainer):
         model: PreTrainedModel,
         inputs: Dict[str, Tensor],
         return_outputs: bool = False,
+        is_training: bool = True,
     ) -> Union[Tensor, Tuple[Tensor, Dict[str, Tensor]]]:
         """
         Compute the DPO loss for a batch of inputs.
@@ -87,4 +88,14 @@ class DPOTrainer(Trainer):
         # Compute DPO loss
         loss: Tensor = -torch.mean(log_p_w - log_p_l - self.beta * (r_w - r_l))
 
+        # Report metrics
+        self.report_metrics(loss, is_training)
+
         return (loss, outputs_w) if return_outputs else loss
+
+    def report_metrics(self, loss: torch.Tensor, is_training: bool = True):
+        metrics = {"loss": loss.item()}
+        if is_training:
+            self.core_context.train.report_training_metrics(metrics)
+        else:
+            self.core_context.train.report_validation_metrics(metrics)
