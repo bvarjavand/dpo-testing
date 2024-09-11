@@ -2,10 +2,11 @@ name: dpo_qwen_experiment
 project: DPO
 workspace: Bijan
 
-image: "determinedai/environments:cuda-11.3-pytorch-1.12-gpu-0.24.0"
+environment:
+    image: determinedai/environments:cuda-11.8-pytorch-2.0-gpu-0.27.1
 
 hyperparameters:
-  model_name: Qwen/Qwen-0.5B
+  model_name: Qwen/Qwen2-0.5B
   dataset_name: tiny_shakespeare
   batch_size: 8
   num_epochs: 3
@@ -15,7 +16,8 @@ hyperparameters:
   num_workers: 2
 
 resources:
-  slots_per_trial: 4  # Adjust this based on your available GPUs
+  resource_pool: A100
+  slots_per_trial: 1  # Adjust this based on your available GPUs
 
 entrypoint: model_def:DPOTrial
 
